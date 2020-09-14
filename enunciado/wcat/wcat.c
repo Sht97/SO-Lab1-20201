@@ -21,16 +21,16 @@ int main(int argc, char *argv[])
 
 void leerArchivo(char *nombre){
 
-inFile = fopen(nombre,"r");
-char data[50] ;
-if(inFile == NULL) {
-  printf("wcat: cannot open file\n");
-  exit(1);
-}
-while( fgets ( data, 50, inFile ) != NULL ){
-      printf( "%s" , data ) ;
-
+  inFile = fopen(nombre,"r");
+  char data[50] ;
+  if(inFile == NULL) {
+    printf("wcat: cannot open file\n");
+    exit(1);
   }
-fclose(inFile); 
+  while( fgets ( data, 50, inFile ) != NULL ){
+        printf( "%s" , data ) ;
+
+    }
+  fclose(inFile); 
 
 }
