@@ -25,8 +25,8 @@ void unzip(char *nombre){
     if(inFile == NULL) {
         exit(1);
     }
-    while (fread(&numero, 4, 1, inFile)) { //Primero lee la letra 
-        fread(&letra, 1, 1, inFile); //Luego lee el número
+    while (fread(&numero, 4, 1, inFile)) { //Primero lee el número 
+        fread(&letra, 1, 1, inFile); //Luego lee la letra
 
         for (int a = 0; a < numero; a++)//Imprime la letra el número de veces
         {

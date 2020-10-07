@@ -1,55 +1,58 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+FILE *inFile;
+void unzip(char *name, char *oldChar, int *characterRep);
 
 int main(int argc, char *argv[])
 {
-    if (argc == 1)
-    {
-        printf("wzip: file1 [file2 ...]\n");
+    if (argc < 2){
+        printf("%s", "wzip: file1 [file2 ...]\n");
         exit(1);
     }
-    int currChar;        /* current characters */
-    int prevChar;        /* previous characters */
-    unsigned int count; /* number of characters in a run */
-    prevChar = EOF;      /* force next char to be different */
-    count = 0;
+    
+    char oldChar;
+    int characterRep;
 
-    for (int i = 1; i < argc; i++)
+    for (int i = 1; i < argc; i++){
+        unzip(argv[i], &oldChar, &characterRep);
+    }
+    
+    fwrite(&characterRep, 4, 1, stdout);
+    fwrite(&oldChar, 1, 1, stdout);
+
+    return (0);
+}
+
+void unzip(char *name, char *oldChar, int *characterRep)
+{
+    inFile = fopen(name, "r");
+    if (inFile == NULL)
     {
+        printf("wgrep: cannot open file\n");
+        exit(1);
+    }
+    char actChar = fgetc(inFile);
 
-        FILE *inFile = fopen(argv[i], "r");
-        if (inFile == NULL)
-        {
-            printf("wzip: cannot open file\n");
-            exit(1);
-        }
-
-        while ((currChar = fgetc(inFile)) != EOF)
-        {
-            if (prevChar != currChar && prevChar == EOF)
-            {
-                prevChar = currChar;
-                count = 1;
-            }
-            else if (prevChar == currChar)
-            {
-                count++;
-            }
-            else if (prevChar != currChar)
-            {
-
-                fwrite(&count, 4, 1, stdout);
-                fwrite(&prevChar, 1, 1, stdout);
-                prevChar = currChar;
-                count = 1;
-            }
-        }
-
-        fclose(inFile);
+    if (*oldChar == 0)
+    {
+        *oldChar = actChar;
+        *characterRep = 0;
     }
 
-    fwrite(&count, 1, 4, stdout);
-    fwrite(&prevChar, 1, 1, stdout);
-    return 0;
+    do
+    {
+        if (*oldChar != actChar)
+        {
+            fwrite(characterRep, 4, 1, stdout);
+            fwrite(oldChar, 1, 1, stdout);
+            *characterRep = 1;
+            *oldChar = actChar;
+        }
+        else
+        {
+            (*characterRep)++;
+        }
+    } while ((actChar = fgetc(inFile)) != EOF);
+    fclose(inFile);
 }
